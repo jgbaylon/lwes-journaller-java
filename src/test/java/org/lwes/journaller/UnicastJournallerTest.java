@@ -1,8 +1,8 @@
 package org.lwes.journaller;
 
 /**
- * User: fmaritato
- * Date: Apr 22, 2009
+ * @author abohr
+ * Date: 09/04/2012
  */
 
 import org.apache.commons.logging.Log;
