@@ -12,6 +12,8 @@ import org.kohsuke.args4j.CmdLineException;
 import org.lwes.EventSystemException;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 
@@ -23,13 +25,18 @@ public class UnicastJournallerTest extends BaseJournallerTest {
     @Test
     public void testUnicastJournaller()
             throws IOException, CmdLineException, EventSystemException {
-        String[] args = {"-a","192.168.56.1","-p", "9191" };
+        String testAddress = "127.0.0.1";
+        InetAddress ia = InetAddress.getByName( testAddress );
+        ServerSocket serverSocket = new ServerSocket(0, 1, ia );
+        String freePort = Integer.toString( serverSocket.getLocalPort() );
+        serverSocket.close();
+        String[] args = {"-a",testAddress,"-p", freePort };
         Journaller uj = new Journaller();
         uj.parseArguments(args);
         uj.initialize();
         String socketClass= uj.getEventHandler().getSocket().getClass().toString();
-        assertEquals("Port value is wrong", 9191, uj.getPort());
-        assertEquals("Address value is wrong", "192.168.56.1", uj.getAddress());
+        assertEquals("Port value is wrong", Integer.parseInt(freePort), uj.getPort());
+        assertEquals("Address value is wrong", testAddress, uj.getAddress());
         assertEquals("Socket is not DatagramSocket","class java.net.DatagramSocket", socketClass);
         uj.shutdown();
 
