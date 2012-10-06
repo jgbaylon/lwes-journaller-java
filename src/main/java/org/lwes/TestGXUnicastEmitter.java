@@ -13,10 +13,8 @@ import org.lwes.emitter.UnicastEventEmitter;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.LinkedList;
 import java.util.Random;
-import java.util.UUID;
 
 public class TestGXUnicastEmitter extends UnicastEventEmitter implements Runnable {
 
@@ -46,6 +44,9 @@ public class TestGXUnicastEmitter extends UnicastEventEmitter implements Runnabl
     @Option(name = "-r", aliases = "--rotate")
     private boolean sendRotate = false;
 
+	@Option(name = "--files", usage = "The files to be used for sample value")
+	private String files;
+
     @Override
     public void initialize() throws IOException {
         setAddress(InetAddress.getByName(uniAddress));
@@ -54,7 +55,6 @@ public class TestGXUnicastEmitter extends UnicastEventEmitter implements Runnabl
     }
 
     public void run() {
-        UUID eid, gRid;
 
         try {
             initialize();
@@ -66,46 +66,20 @@ public class TestGXUnicastEmitter extends UnicastEventEmitter implements Runnabl
             }
             else {
                 for (int i = 0; i < getSeconds(); i++) {
-                    for (int j = 0; j < getNumber(); j++) {
-                        // First emit a Bid::Response
-                        eid = java.util.UUID.randomUUID();
-                        gRid = java.util.UUID.randomUUID();
-                        Random random = new Random();
-                        Integer id1 = showRandomInteger(10000, 99999, random);
-                        NumberFormat n = NumberFormat.getCurrencyInstance(Locale.US);
-                        String price = n.format(random.nextDouble());
-                        long epoch = System.currentTimeMillis()/1000;
-
-                        Event evt = createEvent("Bid::Response", false);
-                        evt.setString("eid", eid.toString());
-                        evt.setString("g_request_time", Long.toString(epoch));
-                        evt.setString("g_request_id", gRid.toString());
-                        evt.setString("u_ip", "0.0.0.0");
-                        evt.setString("a_bid1_price", price);
-                        evt.setString("p_placement_id", id1.toString());
-                        emit(evt);
-
-                        // Next maybe emit a bid result
-                        double didWin = random.nextDouble();
-                        if( didWin > .5){
-                            Thread.sleep(50); // want to get some difference in the timestamps
-                            eid = java.util.UUID.randomUUID();
-                            epoch = System.currentTimeMillis()/1000;
-                            evt = createEvent("Bid::Result", false);
-                            evt.setString("eid", eid.toString());
-                            evt.setString("g_request_time", Long.toString(epoch));
-                            evt.setString("g_request_id", gRid.toString());
-                            evt.setString("u_ip", "0.0.0.0");
-                            evt.setString("p_request_id", id1.toString());
-                            emit(evt);
-                        }
-                    }
+					LinkedList<Event> events = new LinkedList<Event>();
+					GxEventGenerator generator = new GxEventGenerator( files );
+					events = generator.createTransaction( getNumber() );
+					System.out.println("Got back "+events.size() +" events");
+                    for( Event evt : events){
+						emit(evt);
+					}
 
                     Thread.sleep(getBreakSeconds() * 1000);
                 }
             }
         }
         catch (Exception e) {
+			e.printStackTrace();
             log.error(e.getMessage(), e);
         }
 

@@ -24,6 +24,15 @@
             <fileMode>755</fileMode>
             <filtered>true</filtered>
         </fileSet>
+        <fileSet>
+            <directory>src/main/resources/</directory>
+            <includes>
+                <include>*.csv</include>
+            </includes>
+            <outputDirectory>samples</outputDirectory>
+            <fileMode>755</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
 
         <fileSet>
             <directory>src/main/resources</directory>
