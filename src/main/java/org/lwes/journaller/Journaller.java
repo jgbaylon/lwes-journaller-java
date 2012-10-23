@@ -4,8 +4,12 @@ package org.lwes.journaller;
  * Date: Apr 14, 2009
  */
 
+import com.gradientx.common.ZkEndpointClient;
+import com.gradientx.common.ZooKeeperConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.zookeeper.KeeperException;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -16,19 +20,11 @@ import org.lwes.journaller.handler.NIOEventHandler;
 import org.lwes.journaller.handler.SequenceFileHandler;
 import org.lwes.listener.DatagramQueueElement;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
+import javax.management.*;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.DatagramSocket;
-import java.net.SocketTimeoutException;
+import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -98,6 +94,8 @@ public class Journaller implements Runnable, JournallerMBean {
         try {
             ObjectName name = new ObjectName("org.lwes:name=Journaller");
             mbs.registerMBean(this, name);
+			System.out.println("Registering with zoopkeeper address of: "+getAddress()+" and port of "+getPort() );
+			registerZooKeeperEndpoint();
             //mbs.registerMBean(eventHandler, eventHandler.getObjectName());
         }
         catch (MalformedObjectNameException e) {
@@ -112,6 +110,12 @@ public class Journaller implements Runnable, JournallerMBean {
         catch (MBeanRegistrationException e) {
             log.error(e.getMessage(), e);
         }
+		catch (InterruptedException e){
+			log.error(e.getMessage(), e);
+		}
+		catch (KeeperException e){
+			log.error(e.getMessage(), e);
+		}
 
         queue = new LinkedBlockingQueue<DatagramQueueElement>(queueSize);
 
@@ -168,6 +172,22 @@ public class Journaller implements Runnable, JournallerMBean {
 
         initialized = true;
     }
+
+	public void registerZooKeeperEndpoint() throws KeeperException, InterruptedException, UnknownHostException {
+		ZkEndpointClient zkEndpointClient = new ZkEndpointClient(ZooKeeperConstants.journalerPath);
+		if(zkEndpointClient.isConnectedToZooKeeper() == false){
+			log.error("Could not connect to ZooKeeper during open().");
+		}
+		//generate the data
+		byte[] hostAddressBytes = getAddress().getBytes();
+		ByteBuffer b = ByteBuffer.allocate(4);
+		b.putInt(getPort());
+		byte[] hostPortBytes = b.array();
+
+		byte[] dataArray = ArrayUtils.addAll(hostAddressBytes, hostPortBytes);
+
+		zkEndpointClient.registerEndpoint("LWES_journaller", dataArray);
+	}
 
     public void shutdown() {
         if (log.isInfoEnabled()) {
