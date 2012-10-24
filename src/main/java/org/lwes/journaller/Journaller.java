@@ -115,6 +115,7 @@ public class Journaller implements Runnable, JournallerMBean {
 		}
 		catch (KeeperException e){
 			log.error(e.getMessage(), e);
+			System.exit(13);
 		}
 
         queue = new LinkedBlockingQueue<DatagramQueueElement>(queueSize);
@@ -186,7 +187,7 @@ public class Journaller implements Runnable, JournallerMBean {
 
 		byte[] dataArray = ArrayUtils.addAll(hostAddressBytes, hostPortBytes);
 
-		zkEndpointClient.registerEndpoint("LWES_journaller", dataArray);
+		zkEndpointClient.registerEndpoint("/LWES_journaller", dataArray);
 	}
 
     public void shutdown() {
