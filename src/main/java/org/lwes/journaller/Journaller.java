@@ -115,7 +115,6 @@ public class Journaller implements Runnable, JournallerMBean {
 		}
 		catch (KeeperException e){
 			log.error(e.getMessage(), e);
-			System.exit(13);
 		}
 
         queue = new LinkedBlockingQueue<DatagramQueueElement>(queueSize);
@@ -175,7 +174,7 @@ public class Journaller implements Runnable, JournallerMBean {
     }
 
 	public void registerZooKeeperEndpoint() throws KeeperException, InterruptedException, UnknownHostException {
-		ZkEndpointClient zkEndpointClient = new ZkEndpointClient(ZooKeeperConstants.journalerPath);
+		ZkEndpointClient zkEndpointClient = new ZkEndpointClient(ZooKeeperConstants.journallerPath);
 		if(zkEndpointClient.isConnectedToZooKeeper() == false){
 			log.error("Could not connect to ZooKeeper during open().");
 		}
@@ -187,7 +186,7 @@ public class Journaller implements Runnable, JournallerMBean {
 
 		byte[] dataArray = ArrayUtils.addAll(hostAddressBytes, hostPortBytes);
 
-		zkEndpointClient.registerEndpoint("/LWES_journaller", dataArray);
+		zkEndpointClient.registerEndpoint(ZooKeeperConstants.lwesJournallerPath, dataArray);
 	}
 
     public void shutdown() {
