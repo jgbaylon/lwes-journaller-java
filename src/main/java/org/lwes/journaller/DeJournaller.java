@@ -7,6 +7,14 @@ package org.lwes.journaller;
  * Date: Apr 16, 2009
  */
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.zip.GZIPInputStream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -19,35 +27,33 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.lwes.Event;
 import org.lwes.EventSystemException;
+import org.lwes.NoSuchAttributeException;
 import org.lwes.db.EventTemplateDB;
 import org.lwes.journaller.util.EventHandlerUtil;
 import org.lwes.serializer.DeserializerState;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.zip.GZIPInputStream;
-
 public class DeJournaller implements Runnable, JournallerConstants {
     private static transient Log log = LogFactory.getLog(DeJournaller.class);
 
-    @Option(name = "--seq", aliases = "--sequence")
+    @Option(name = "--seq", aliases = "--sequence", usage = "Use if dejournalling a sequence file")
     protected boolean sequence = false;
 
-    @Option(name = "-g", aliases = "--gzipped")
+    @Option(name = "-g", aliases = "--gzipped", usage = "Use if dejournalling a gzip file")
     protected boolean gzipped;
 
-    @Option(name = "-f", aliases = "--file")
+    @Option(name = "-f", aliases = "--file", usage = "Location of the file")
     protected String fileName;
 
-    @Option(name = "-e", aliases = "--esf-file")
+    @Option(name = "-e", aliases = "--esf-file", usage = "Location of the ESF if you want to validate")
     protected String esfFile;
 
-    @Option(name = "-v", aliases = "validate")
+    @Option(name = "-v", aliases = "--validate", usage = "Set if you want to validate events")
     protected boolean validate = false;
+
+    @Option(name = "-a", aliases = "--attributes", usage = "Comma separated list of attributes to print")
+    protected String attributes;
+
+    protected String[] attributeList;
 
     public DeJournaller() {
     }
@@ -57,6 +63,10 @@ public class DeJournaller implements Runnable, JournallerConstants {
         if (fileName == null || "".equals(fileName)) {
             log.error("File name was not specified");
             return;
+        }
+
+        if (attributes != null) {
+            attributeList = attributes.split(",");
         }
 
         EventTemplateDB evtTemplate = new EventTemplateDB();
@@ -126,7 +136,7 @@ public class DeJournaller implements Runnable, JournallerConstants {
             EventTemplateDB templ = new EventTemplateDB();
             DeserializerState state = new DeserializerState();
             while (reader.next(key, value)) {
-                byte[] evtBytes = new byte[key.getLength()+value.getLength()];
+                byte[] evtBytes = new byte[key.getLength() + value.getLength()];
                 System.arraycopy(key.getBytes(), 0,
                                  evtBytes, 0,
                                  key.getLength());
@@ -134,11 +144,11 @@ public class DeJournaller implements Runnable, JournallerConstants {
                                  evtBytes,
                                  key.getLength(), value.getLength());
                 Event evt = EventHandlerUtil.readEvent
-                    (new DataInputStream(new ByteArrayInputStream(evtBytes)),
-                     state, templ);
+                        (new DataInputStream(new ByteArrayInputStream(evtBytes)),
+                         state, templ);
                 state.reset();
                 if (log.isDebugEnabled()) {
-                    log.debug("read a k/v: "+evt.toOneLineString());
+                    log.debug("read a k/v: " + evt.toOneLineString());
                 }
                 handleEvent(evt);
             }
@@ -184,21 +194,33 @@ public class DeJournaller implements Runnable, JournallerConstants {
      * @param event
      */
     public void handleEvent(Event event) {
-        System.out.println(event.toOneLineString());
-    }
-
-    protected void parseArguments(String[] args) throws CmdLineException {
-        CmdLineParser parser = new CmdLineParser(this);
-        parser.parseArgument(args);
+        if (attributeList != null) {
+            for (String a : attributeList) {
+                try {
+                    System.out.print(event.get(a) + " ");
+                }
+                catch (NoSuchAttributeException e) {
+                    log.error(e);
+                }
+            }
+            System.out.println();
+        }
+        else {
+            System.out.println(event.toOneLineString());
+        }
     }
 
     public static void main(String[] args) {
         DeJournaller dj = new DeJournaller();
+        CmdLineParser parser = null;
         try {
-            dj.parseArguments(args);
+            parser = new CmdLineParser(dj);
+            parser.parseArgument(args);
         }
         catch (CmdLineException e) {
-            log.error(e.getMessage(), e);
+            System.err.println(e.getMessage());
+            parser.printUsage(System.err);
+            return;
         }
         dj.run();
     }

@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
 import org.lwes.EventSystemException;
 
 import java.io.IOException;
@@ -32,7 +33,14 @@ public class UnicastJournallerTest extends BaseJournallerTest {
         serverSocket.close();
         String[] args = {"-a",testAddress,"-p", freePort };
         Journaller uj = new Journaller();
-        uj.parseArguments(args);
+        CmdLineParser parser = null;
+        try {
+            parser = new CmdLineParser(uj);
+            parser.parseArgument(args);
+        }
+        catch (CmdLineException e) {
+        	fail(e.getMessage());
+        }
         uj.initialize();
         String socketClass= uj.getEventHandler().getSocket().getClass().toString();
         assertEquals("Port value is wrong", Integer.parseInt(freePort), uj.getPort());
@@ -47,7 +55,14 @@ public class UnicastJournallerTest extends BaseJournallerTest {
             throws IOException, CmdLineException, EventSystemException {
         String[] args = {"-a","224.1.1.11","-p", "9191" };
         Journaller mj = new Journaller();
-        mj.parseArguments(args);
+        CmdLineParser parser = null;
+        try {
+            parser = new CmdLineParser(mj);
+            parser.parseArgument(args);
+        }
+        catch (CmdLineException e) {
+        	fail(e.getMessage());
+        }
         mj.initialize();
 
         String socketClass= mj.getEventHandler().getSocket().getClass().toString();
