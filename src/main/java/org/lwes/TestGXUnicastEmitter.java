@@ -13,8 +13,10 @@ import org.lwes.emitter.UnicastEventEmitter;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.TimeZone;
 
 public class TestGXUnicastEmitter extends UnicastEventEmitter implements Runnable {
 
@@ -55,7 +57,8 @@ public class TestGXUnicastEmitter extends UnicastEventEmitter implements Runnabl
     }
 
     public void run() {
-
+		SimpleDateFormat SDF_MIN = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		SDF_MIN.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             initialize();
 
@@ -69,7 +72,7 @@ public class TestGXUnicastEmitter extends UnicastEventEmitter implements Runnabl
 					LinkedList<Event> events = new LinkedList<Event>();
 					GxEventGenerator generator = new GxEventGenerator( files );
 					events = generator.createTransaction( getNumber() );
-					System.out.println("Got back "+events.size() +" events");
+					System.out.println("Got back "+events.size() +" events @ "+ SDF_MIN.format(System.currentTimeMillis()));
                     for( Event evt : events){
 						emit(evt);
 					}

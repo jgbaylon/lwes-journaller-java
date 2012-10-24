@@ -9,7 +9,7 @@
    </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.lwes</groupId>
+    <groupId>com.gradientx</groupId>
     <artifactId>lwes-journaller-java</artifactId>
     <packaging>jar</packaging>
     <version>1.1.0-SNAPSHOT</version>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.gradientx</groupId>
             <artifactId>gx-common</artifactId>
-            <version>0.0.4-SNAPSHOT</version>
+            <version>0.0.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -65,14 +65,9 @@
             <version>1.1.1</version>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.lwes</groupId>
+            <groupId>com.gradientx</groupId>
             <artifactId>lwes-java</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -348,4 +343,28 @@
             </snapshots>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>gradientx-release-repo</id>
+            <name>Gradient X Release Repository</name>
+            <url>s3://codex.corp.gradientx.com/maven/release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>gradientx-snapshot-repo</id>
+            <name>Gradient X Snapshot Repository</name>
+            <url>s3://codex.corp.gradientx.com/maven/snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

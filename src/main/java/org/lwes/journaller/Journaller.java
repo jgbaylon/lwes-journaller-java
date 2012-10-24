@@ -6,27 +6,8 @@ package org.lwes.journaller;
 
 import com.gradientx.common.ZkEndpointClient;
 import com.gradientx.common.ZooKeeperConstants;
-
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.SocketTimeoutException;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.zookeeper.KeeperException;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -42,7 +23,6 @@ import javax.management.*;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.*;
-import java.nio.ByteBuffer;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -196,15 +176,8 @@ public class Journaller implements Runnable, JournallerMBean {
 		if(zkEndpointClient.isConnectedToZooKeeper() == false){
 			log.error("Could not connect to ZooKeeper during open().");
 		}
-		//generate the data
-		byte[] hostAddressBytes = getAddress().getBytes();
-		ByteBuffer b = ByteBuffer.allocate(4);
-		b.putInt(getPort());
-		byte[] hostPortBytes = b.array();
-
-		byte[] dataArray = ArrayUtils.addAll(hostAddressBytes, hostPortBytes);
-
-		zkEndpointClient.registerEndpoint(ZooKeeperConstants.lwesJournallerPath, dataArray);
+		InetSocketAddress inetSocketAddress = new InetSocketAddress(getAddress(), getPort());
+		zkEndpointClient.registerEndpoint(ZooKeeperConstants.lwesJournallerPath, inetSocketAddress);
 	}
 
     public void shutdown() {
