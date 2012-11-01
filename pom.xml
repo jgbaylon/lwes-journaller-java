@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.gradientx</groupId>
             <artifactId>gx-common</artifactId>
-            <version>0.0.8-SNAPSHOT</version>
+            <version>0.0.12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
