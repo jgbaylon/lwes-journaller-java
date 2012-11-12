@@ -172,7 +172,7 @@ public class Journaller implements Runnable, JournallerMBean {
     }
 
 	public void registerZooKeeperEndpoint() throws KeeperException, InterruptedException, UnknownHostException {
-		ZkEndpointClient zkEndpointClient = new ZkEndpointClient(ZooKeeperConstants.journallerPath);
+		ZkEndpointClient zkEndpointClient = new ZkEndpointClient();
 		if(zkEndpointClient.isConnectedToZooKeeper() == false){
 			log.error("Could not connect to ZooKeeper during open().");
 		}
