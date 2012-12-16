@@ -22,7 +22,7 @@ def lineno( ):
 	###Returns the current line number
 	return inspect.currentframe().f_back.f_lineno
 #########################################
-def init_logging( log_file, loglevel="DEBUG"):
+def init_logging( log_file, loglevel="INFO"):
 	numeric_level = getattr(logging, loglevel.upper(), None)
         if not isinstance(numeric_level, int):
                 raise ValueError('Invalid log level: %s' % loglevel)
@@ -68,24 +68,27 @@ lwesLogsArchive="/mnt/journals/archive/"
 lwesLogsProcessed="/mnt/journals/processed/"
 init_logging( log_file )
 
-
-### Get the date string for the retention cutoff
-cutoff= (datetime.now() - timedelta(days= rententionDays )).strftime('%Y%m%d')
-print "Cutoff Day = %s" % cutoff
-
+logging.info("START LOG ARCVIVER")
 ### Put all the processed files in archive directories
 dirList = dirList=glob.glob( lwesLogsProcessed+'*')
 for file in dirList:
 	m = re.search('([0-9]{12})[^/]+seq', file)
 	date = m.group(1)
-	archiveDir = lwesLogsProcessed+date[0:8]
+	archiveDir = lwesLogsArchive+date[0:8]
 	logging.debug("File %s has archive dir %s" % (file, archiveDir)) 
 	if not os.path.exists( archiveDir ):
-		logging.debug( "Dir %s does not exist, making now" % (archiveDir) )
+		logging.info( "Dir %s does not exist, making now" % (archiveDir) )
 		os.makedirs( archiveDir )
 	shutil.move( file, archiveDir )
 
-#return [name for name in os.listdir(dir)  if os.path.isdir(os.path.join(dir, name))
+### Cycle through all the archive directories and delete any older than retention
+### Get the date string for the retention cutoff
+cutoff= (datetime.now() - timedelta(days= rententionDays )).strftime('%Y%m%d')
+logging.info("Cutoff Day = %s" % cutoff)
 
-
-
+for name in os.listdir(lwesLogsArchive): 
+	if os.path.isdir(os.path.join(lwesLogsArchive, name)):
+		if name < cutoff:
+			logging.info("Going to remove dir %s%s" % (lwesLogsArchive, name))
+			os.rmdir( os.path.join(lwesLogsArchive, name))
+		

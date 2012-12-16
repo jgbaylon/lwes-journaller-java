@@ -5,7 +5,7 @@
 export LWES_JOURNALLER_HOME=/usr/share/lwes-journaller
 
 # Multicast or Unicast address to listen on
-export LWES_ADDRESS=replace with host-address (local host wasn't working with EC2 config)
+export LWES_ADDRESS=10.245.63.143
 
 # Port to listen on
 export LWES_PORT=9999
@@ -15,7 +15,7 @@ export LWES_JOURNAL_SITEID=0
 
 # Filename to use for current file. The journaller will append .seq or .gz depending
 # on what format it is outputting.
-export LWES_JOURNAL_FILE=/journaller/journals/current/%h_%tY%tm%td%tH%tM%tS
+export LWES_JOURNAL_FILE=/mnt/journals/current/%h_%tY%tm%td%tH%tM%tS
 
 # Interval in which to emit health events. 0 means disabled.
 export LWES_JOURNAL_HEALTH_INTERVAL=0
