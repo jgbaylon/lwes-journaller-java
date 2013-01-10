@@ -61,7 +61,7 @@ def report_error( msg, err_code, line_no ):
 ############################################
 ############## MAIN
 ############################################
-rententionDays=8
+rententionDays=15
 log_file="/var/log/lwes-journaller/logArchiver.log" # The log for this app, not to be confused with the lwesLogs this app is pushing
 lwesLogs="/mnt/journals/current/"
 lwesLogsArchive="/mnt/journals/archive/"
@@ -90,5 +90,5 @@ for name in os.listdir(lwesLogsArchive):
 	if os.path.isdir(os.path.join(lwesLogsArchive, name)):
 		if name < cutoff:
 			logging.info("Going to remove dir %s%s" % (lwesLogsArchive, name))
-			os.rmdir( os.path.join(lwesLogsArchive, name))
+			shutil.rmtree( os.path.join(lwesLogsArchive, name))
 		
