@@ -1,6 +1,6 @@
 #!bin/python
 
-#### Pushes all but the most current log file to HDFS and moves to local archive folder
+#### Pushes via SCP all but the most current log file to Prod Entry Node and moves to local archive folder
 import os
 import sys
 import glob
@@ -86,12 +86,7 @@ def check_lock( ):
 
 #########################################
 def main():
-		#Check hdfs for log directory
-		subProc(\
-			["hadoop", "fs", "-test","-d", lwesLogHDFS],
-			"", "ERROR checking for hdfs dir %s" % (lwesLogHDFS),
-			lineno() )
-
+		
 		#Get the most recent file
 		dirList=os.listdir(lwesLogs)
 		logFiles=[]
@@ -106,34 +101,25 @@ def main():
 
 		# Move all but the max fileName into HDFS and then archive (the max filename is the most recent file and is currently being written to by journaller)
 		for i in range(len(logFiles) -1):
-			# Check if this log already exists in HDFS, if so, log a warning and move file to archive
-			sub=subprocess.Popen( ["hadoop", "fs", "-test", "-e", lwesLogHDFS+logFiles[i]] , stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-			output = sub.communicate()[0]
-			rc= sub.returncode
-			if rc ==0:
-				logging.warn( str(datetime.now())+"File %s already exists in lwesLogs" % ( logFiles[i] ))
-				shutil.move( lwesLogs+logFiles[i], lwesLogsProcessed)
-
-			# If the file doesn't exist (which it shouldn't) then copy it to HDFS and move it to local archives
-			else:
-
-				logging.debug("Moving this log File: %s " % logFiles[i])
-				subProc(\
-					["hadoop","fs", "-put", lwesLogs+logFiles[i], lwesLogHDFS],
-					"", "ERROR - failed trying to push file to hdfs: %s" % ( logFiles[i] ), lineno() )
-				shutil.move( lwesLogs+logFiles[i], lwesLogsProcessed)
+			
+            logging.debug("SCPing this log File: %s " % logFiles[i])
+            subProc(\
+                ["scp", lwesLogs+logFiles[i], entryNode+":"+lwesLogEntryNode],
+                "", "ERROR - failed trying to push file to hdfs: %s" % ( logFiles[i] ), lineno() )
+            shutil.move( lwesLogs+logFiles[i], lwesLogsProcessed)
 
 
 
 ############################################
 ############## MAIN
 ############################################
-log_file="/var/log/lwes-journaller/logPusher.log" # The log for this app, not to be confused with the lwesLogs this app is pushing
-lock_file="/var/lock/lwes-journaller/logPusher"
+log_file="/var/log/lwes-journaller/logScp.log" # The log for this app, not to be confused with the lwesLogs this app is pushing
+lock_file="/var/lock/lwes-journaller/logScp"
 lwesLogs="/mnt/journals/current/"
 lwesLogsProcessed="/mnt/journals/processed"
-lwesLogHDFS="/user/gxetl/lwesLogs/"
-WFID=str(uuid.uuid4())
+entryNode="prod-hdfs-entry002.pe1i.gradientx.com"
+lwesLogEntryNode="/home/gxetl/lwesLogs/"
+WFID=str(uuid.uuid4())	
 init_logging( log_file )
 
 if not os.path.isdir(lwesLogsProcessed):
