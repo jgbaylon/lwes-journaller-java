@@ -11,6 +11,7 @@ import uuid
 import inspect
 import traceback
 import datetime
+import socket
 
 #########################################
 def subProc(  args, start_msg, err_msg, line_no ):
@@ -26,7 +27,7 @@ def lineno( ):
 	###Returns the current line number
 	return inspect.currentframe().f_back.f_lineno
 #########################################
-def init_logging( log_file, loglevel="DEBUG"):
+def init_logging( log_file, loglevel="INFO"):
 	numeric_level = getattr(logging, loglevel.upper(), None)
 	if not isinstance(numeric_level, int):
 		raise ValueError('Invalid log level: %s' % loglevel)
@@ -85,13 +86,26 @@ def check_lock( ):
 	else:
 		return 0
 
+def check_directories( ):
+	#Check hdfs for log directory
+        subProc(\
+                ["hadoop", "fs", "-test","-d", lwesLogHDFS],
+                "", "ERROR checking for hdfs dir %s" % (lwesLogHDFS),
+                lineno() )
+	logging.debug(" Checking tmp directory %s" % ( hdfsTempDir ))
+	#Check the temp directory (used to ensure the put is finished before accessing the file)
+	sub=subprocess.Popen( ["hadoop", "fs", "-test", "-d", hdfsTempDir], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+	output = sub.communicate()[0]
+	rc= sub.returncode
+	if rc !=0:
+		logging.warn("Tmp directory, %s, doesn't exist, making now" % (hdfsTempDir))
+		subProc(\
+			["hadoop", "fs", "-mkdir", hdfsTempDir ],
+			"", "ERROR making temp directory %s" % (hdfsTempDir ),
+			lineno() )
 #########################################
 def main():
-	#Check hdfs for log directory
-	subProc(\
-		["hadoop", "fs", "-test","-d", lwesLogHDFS],
-		"", "ERROR checking for hdfs dir %s" % (lwesLogHDFS),
-		lineno() )
+	check_directories()
 
 	#Get the most recent file
 	dirList=os.listdir(lwesLogs)
@@ -119,13 +133,17 @@ def main():
 		else:
 			start = datetime.datetime.now()
 			logging.info("Moving log File: %s " % logFiles[i])
+			## Put to temp directory
 			subProc(\
-				["hadoop","fs", "-put", lwesLogs+logFiles[i], lwesLogHDFS],
+				["hadoop","fs", "-put", lwesLogs+logFiles[i], hdfsTempDir],
 				"", "ERROR - failed trying to push file to hdfs: %s" % ( logFiles[i] ), lineno() )
 			stop = datetime.datetime.now()
 			diff = stop - start
 			logging.info("Took %s to move file %s" % ( str(diff.seconds / 60 ) + ':' + str(diff.seconds % 60).zfill(2), logFiles[i]))
 			shutil.move( lwesLogs+logFiles[i], lwesLogsProcessed)
+			subProc(\
+                                ["hadoop","fs", "-mv", hdfsTempDir+logFiles[i], lwesLogHDFS],
+                                "", "ERROR - failed trying to move file to logDir: %s" % ( logFiles[i] ), lineno() )
 
 	logging.info("FINISHED for wfid %s" % ( WFID ))
 
@@ -139,10 +157,10 @@ if __name__ == "__main__":
 	lock_file="/var/lock/lwes-journaller/logPusher"
 	lwesLogs="/mnt/journals/current/"
 	lwesLogsProcessed="/mnt/journals/processed"
+	hdfsTempDir="/user/gxetl/tmp/lwesLogs/" 
 	lwesLogHDFS="/user/gxetl/lwesLogs/"
 	WFID=str(uuid.uuid4())
 	init_logging( log_file )
-
 	if not os.path.isdir(lwesLogsProcessed):
 		logging.error( "ERROR - Processed directory does not exist, should already exist at: %s" % ( lwesLogsProcessed ))
 		sys.exit(1)
