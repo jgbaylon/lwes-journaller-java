@@ -6,6 +6,7 @@ package org.lwes.journaller;
 
 import com.gradientx.common.ZkEndpointClient;
 import com.gradientx.common.ZooKeeperConstants;
+import com.gradientx.common.GxConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.KeeperException;
@@ -266,7 +267,8 @@ public class Journaller implements Runnable, JournallerMBean {
         return queue.size();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws  IOException{
+		GxConfig.initialize("/usr/local/etc/server.properties");
         Journaller j = new Journaller();
         CmdLineParser parser = null;
         try {
