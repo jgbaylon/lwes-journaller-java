@@ -21,10 +21,11 @@ fi
 min=$(date +%M)
 while [ ! $(( min % 5 )) -eq 0 ]
 do
-        sleep 10s
         echo "$(date):Waiting to start logs at a 5 minute mark"
+        sleep 10s
         min=$(date +%M)
 done
+echo "Starting journaller with address of $LWES_ADDRESS and port $LWES_PORT"
 PROG_CMD="$LWES_JOURNALLER_HOME/bin/lwes-journaller \
  -a $LWES_ADDRESS -p $LWES_PORT \
  -f $LWES_JOURNAL_FILE $LWES_JOURNAL_FORMAT"
