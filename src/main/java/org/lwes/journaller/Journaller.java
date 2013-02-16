@@ -4,9 +4,9 @@ package org.lwes.journaller;
  * Date: Apr 14, 2009
  */
 
+import com.gradientx.common.GxConfig;
 import com.gradientx.common.ZkEndpointClient;
 import com.gradientx.common.ZooKeeperConstants;
-import com.gradientx.common.GxConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.KeeperException;
@@ -63,6 +63,9 @@ public class Journaller implements Runnable, JournallerMBean {
 
     @Option(name = "--sequence", usage = "Produce a sequence file")
     private boolean useSequence = false;
+
+	@Option(name = "--gx-config", usage ="Location of gx-config file")
+	private static String gxConfigFile = "/usr/local/etc/server.properties";
 
     private AbstractFileEventHandler eventHandler = null;
     private volatile DatagramSocket socket = null;
@@ -268,7 +271,7 @@ public class Journaller implements Runnable, JournallerMBean {
     }
 
     public static void main(String[] args) throws  IOException{
-		GxConfig.initialize("/usr/local/etc/server.properties");
+		GxConfig.initialize(gxConfigFile);
         Journaller j = new Journaller();
         CmdLineParser parser = null;
         try {
