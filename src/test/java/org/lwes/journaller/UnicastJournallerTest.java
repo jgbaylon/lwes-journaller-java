@@ -5,6 +5,7 @@ package org.lwes.journaller;
  * Date: 09/04/2012
  */
 
+import com.gradientx.common.GxConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -15,13 +16,21 @@ import org.lwes.EventSystemException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class UnicastJournallerTest extends BaseJournallerTest {
     private transient Log log = LogFactory.getLog(UnicastJournallerTest.class);
+	static {
+		try{
+			GxConfig.initialize("/usr/local/etc/server.properties");
+		}
+		catch(IOException e){
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
 
     @Test
     public void testUnicastJournaller()
@@ -33,6 +42,7 @@ public class UnicastJournallerTest extends BaseJournallerTest {
         serverSocket.close();
         String[] args = {"-a",testAddress,"-p", freePort };
         Journaller uj = new Journaller();
+
         CmdLineParser parser = null;
         try {
             parser = new CmdLineParser(uj);
@@ -41,6 +51,7 @@ public class UnicastJournallerTest extends BaseJournallerTest {
         catch (CmdLineException e) {
         	fail(e.getMessage());
         }
+
         uj.initialize();
         String socketClass= uj.getEventHandler().getSocket().getClass().toString();
         assertEquals("Port value is wrong", Integer.parseInt(freePort), uj.getPort());
