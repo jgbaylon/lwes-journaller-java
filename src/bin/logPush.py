@@ -155,8 +155,8 @@ if __name__ == "__main__":
 	global WFID
 	log_file="/var/log/lwes-journaller/logPusher.log" # The log for this app, not to be confused with the lwesLogs this app is pushing
 	lock_file="/var/lock/lwes-journaller/logPusher"
-	lwesLogs="/mnt/journals/current/"
-	lwesLogsProcessed="/mnt/journals/processed"
+	lwesLogs="/journals/current/"
+	lwesLogsProcessed="/journals/processed"
 	hdfsTempDir="/user/gxetl/tmp/lwesLogs/" 
 	lwesLogHDFS="/user/gxetl/lwesLogs/"
 	WFID=str(uuid.uuid4())
