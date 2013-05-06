@@ -61,7 +61,7 @@ def report_error( msg, err_code, line_no ):
 ############################################
 ############## MAIN
 ############################################
-rententionDays=11
+rententionDays=03
 log_file="/var/log/lwes-journaller/logArchiver.log" # The log for this app, not to be confused with the lwesLogs this app is pushing
 lwesLogs="/journals/current/"
 lwesLogsArchive="/journals/archive/"
