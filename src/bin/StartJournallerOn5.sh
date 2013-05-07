@@ -27,7 +27,7 @@ do
 done
 echo "Starting journaller with address of $LWES_ADDRESS and port $LWES_PORT"
 PROG_CMD="$LWES_JOURNALLER_HOME/bin/lwes-journaller \
- -a $LWES_ADDRESS -p $LWES_PORT \
+ -a $LWES_ADDRESS -p $LWES_PORT -q 50000\
  -f $LWES_JOURNAL_FILE $LWES_JOURNAL_FORMAT"
 
 $PROG_CMD
