@@ -5,7 +5,7 @@
 export LWES_JOURNALLER_HOME=/usr/share/lwes-journaller
 
 # Multicast or Unicast address to listen on
-export LWES_ADDRESS=10.245.63.143
+export LWES_ADDRESS=10.4.63.135
 
 # Port to listen on
 export LWES_PORT=9999
@@ -24,4 +24,4 @@ export LWES_JOURNAL_HEALTH_INTERVAL=0
 export LWES_JOURNAL_FORMAT="--sequence"
 
 # How many events should be in the queue maximum
-export LWES_JOURNAL_QUEUE_SIZE=8000
+export LWES_JOURNAL_QUEUE_SIZE=50000
