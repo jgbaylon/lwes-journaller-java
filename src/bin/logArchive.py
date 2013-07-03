@@ -61,11 +61,11 @@ def report_error( msg, err_code, line_no ):
 ############################################
 ############## MAIN
 ############################################
-rententionDays=11
+rententionDays=02
 log_file="/var/log/lwes-journaller/logArchiver.log" # The log for this app, not to be confused with the lwesLogs this app is pushing
-lwesLogs="/mnt/journals/current/"
-lwesLogsArchive="/mnt/journals/archive/"
-lwesLogsProcessed="/mnt/journals/processed/"
+lwesLogs="/journals/current/"
+lwesLogsArchive="/journals/archive/"
+lwesLogsProcessed="/journals/processed/"
 init_logging( log_file )
 
 logging.info("START LOG ARCVIVER")

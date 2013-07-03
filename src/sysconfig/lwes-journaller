@@ -5,7 +5,7 @@
 export LWES_JOURNALLER_HOME=/usr/share/lwes-journaller
 
 # Multicast or Unicast address to listen on
-export LWES_ADDRESS=10.245.63.143
+export LWES_ADDRESS=10.4.63.135
 
 # Port to listen on
 export LWES_PORT=9999
@@ -15,7 +15,7 @@ export LWES_JOURNAL_SITEID=0
 
 # Filename to use for current file. The journaller will append .seq or .gz depending
 # on what format it is outputting.
-export LWES_JOURNAL_FILE=/mnt/journals/current/%h_%tY%tm%td%tH%tM%tS
+export LWES_JOURNAL_FILE=/journals/current/%h_%tY%tm%td%tH%tM%tS
 
 # Interval in which to emit health events. 0 means disabled.
 export LWES_JOURNAL_HEALTH_INTERVAL=0
@@ -24,4 +24,4 @@ export LWES_JOURNAL_HEALTH_INTERVAL=0
 export LWES_JOURNAL_FORMAT="--sequence"
 
 # How many events should be in the queue maximum
-export LWES_JOURNAL_QUEUE_SIZE=8000
+export LWES_JOURNAL_QUEUE_SIZE=50000
