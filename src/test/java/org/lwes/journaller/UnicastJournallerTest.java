@@ -5,7 +5,7 @@ package org.lwes.journaller;
  * Date: 09/04/2012
  */
 
-import com.gradientx.common.GxConfig;
+import com.gradientx.common.config.GxConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
