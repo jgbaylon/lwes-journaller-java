@@ -4,7 +4,7 @@ package org.lwes.journaller;
  * Date: Apr 14, 2009
  */
 
-import com.gradientx.common.GxConfig;
+import com.gradientx.common.config.GxConfig;
 import com.gradientx.common.ZkEndpointClient;
 import com.gradientx.common.ZooKeeperConstants;
 import org.apache.commons.logging.Log;
