@@ -24,4 +24,4 @@ export LWES_JOURNAL_HEALTH_INTERVAL=0
 export LWES_JOURNAL_FORMAT="--sequence"
 
 # How many events should be in the queue maximum
-export LWES_JOURNAL_QUEUE_SIZE=50000
+export LWES_JOURNAL_QUEUE_SIZE=250000
