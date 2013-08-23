@@ -3,3 +3,6 @@
 target
 logs
 *.log
+.classpath
+.project
+.settings

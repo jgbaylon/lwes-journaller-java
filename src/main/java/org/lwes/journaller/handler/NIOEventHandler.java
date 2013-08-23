@@ -11,11 +11,13 @@ import org.lwes.listener.DatagramQueueElement;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import java.io.FileOutputStream;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
 
 public class NIOEventHandler extends AbstractFileEventHandler {
 
@@ -24,13 +26,12 @@ public class NIOEventHandler extends AbstractFileEventHandler {
     private FileChannel channel = null;
     private FileChannel tmpChannel = null;
     private FileChannel oldChannel = null;
-
-    private FileOutputStream out = null;
-    private FileOutputStream tmp = null;
-    private FileOutputStream old = null;
-
-    private ByteBuffer headerBuffer = ByteBuffer.allocateDirect(DeJournaller.MAX_HEADER_SIZE);
-    private ByteBuffer bodyBuffer = ByteBuffer.allocateDirect(DeJournaller.MAX_BODY_SIZE);
+    
+    private ThreadLocal<ByteBuffer> localBuffer = new ThreadLocal<ByteBuffer>(){
+    	protected ByteBuffer initialValue() {
+    		return ByteBuffer.allocate(DeJournaller.MAX_HEADER_SIZE + DeJournaller.MAX_BODY_SIZE);
+    	};
+    };
 
     public NIOEventHandler() {
     }
@@ -41,39 +42,35 @@ public class NIOEventHandler extends AbstractFileEventHandler {
         createOutputStream(fn);
         swapOutputStream();
         setFilename(fn);
-
-        headerBuffer.clear();
-        bodyBuffer.clear();
     }
 
     public void createOutputStream(String filename) throws IOException {
-        tmp = new FileOutputStream(filename, true);
-        if (log.isDebugEnabled()) {
-            log.debug("using file: " + getFilename());
-        }
-        tmpChannel = tmp.getChannel();
+        tmpChannel = FileChannel.open(
+        		new File(filename).toPath(), 
+        		StandardOpenOption.WRITE, 
+        		StandardOpenOption.APPEND, 
+        		StandardOpenOption.DSYNC);
     }
 
     public void handleEvent(DatagramQueueElement element) throws IOException {
         DatagramPacket packet = element.getPacket();
+
+        ByteBuffer buffer = localBuffer.get();
 
         EventHandlerUtil.writeHeader(packet.getLength(),
                                      element.getTimestamp(),
                                      packet.getAddress(),
                                      packet.getPort(),
                                      getSiteId(),
-                                     headerBuffer);
+                                     buffer);
 
+        buffer.put(packet.getData());
+        buffer.flip();
+        
         synchronized (lock) {
-            headerBuffer.flip();
-            channel.write(headerBuffer);
-            bodyBuffer.put(packet.getData());
-            bodyBuffer.flip();
-            channel.write(bodyBuffer);
-            out.flush();
-            headerBuffer.clear();
-            bodyBuffer.clear();
+            channel.write(buffer);
         }
+        buffer.clear();
     }
 
     public String getFileExtension() {
@@ -81,9 +78,6 @@ public class NIOEventHandler extends AbstractFileEventHandler {
     }
 
     public void swapOutputStream() {
-        old = out;
-        out = tmp;
-        tmp = null;
         oldChannel = channel;
         channel = tmpChannel;
         tmpChannel = null;
@@ -93,11 +87,6 @@ public class NIOEventHandler extends AbstractFileEventHandler {
         if (oldChannel != null) {
             oldChannel.close();
             oldChannel = null;
-        }
-        if (old != null) {
-            old.flush();
-            old.close();
-            old = null;
         }
     }
 

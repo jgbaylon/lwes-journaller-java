@@ -157,10 +157,12 @@ public class Journaller implements Runnable, JournallerMBean {
         // Add a shutdown hook in case of kill or ^c
         Runtime.getRuntime().addShutdownHook(new ShutdownThread(eventHandler));
 
-        HandlerThread handlerThread = new HandlerThread();
-        Thread t = new Thread(handlerThread, "handler thread");
-        t.setPriority(Thread.NORM_PRIORITY);
-        t.start();
+        for(int i = 0; i < Runtime.getRuntime().availableProcessors(); i++){
+        	HandlerThread handlerThread = new HandlerThread();
+        	Thread t = new Thread(handlerThread, "handler thread " + i);
+        	t.setPriority(Thread.NORM_PRIORITY);
+        	t.start();
+        }
 
         if (log.isInfoEnabled()) {
             log.info("LWES Journaller");
