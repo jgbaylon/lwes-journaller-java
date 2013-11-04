@@ -181,7 +181,7 @@ public class Journaller implements Runnable, JournallerMBean {
 			log.error("Could not connect to ZooKeeper during open().");
 		}
 		InetSocketAddress inetSocketAddress = new InetSocketAddress(getAddress(), getPort());
-		zkEndpointClient.registerEndpoint(ZooKeeperConstants.lwesJournallerPath, inetSocketAddress);
+		zkEndpointClient.registerEndpoint(ZooKeeperConstants.lwesTestJournallerPath, inetSocketAddress);
 	}
 
     public void shutdown() {
