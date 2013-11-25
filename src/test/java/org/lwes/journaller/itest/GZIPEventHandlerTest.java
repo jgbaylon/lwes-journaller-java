@@ -1,4 +1,4 @@
-package org.lwes.journaller;
+package org.lwes.journaller.itest;
 /**
  * User: fmaritato
  * Date: Apr 22, 2009
@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.lwes.Event;
+import org.lwes.journaller.MockDeJournaller;
 import org.lwes.journaller.handler.GZIPEventHandler;
 
 import java.io.File;
