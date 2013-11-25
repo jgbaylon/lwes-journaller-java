@@ -372,6 +372,20 @@
                     </mappings>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <version>2.1-alpha-3</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>attach-rpm</id>
+                        <goals>
+                            <goal>attached-rpm</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
