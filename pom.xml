@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-   <!-- This section is here so we can publish to central -->
-   <parent>
-     <groupId>org.sonatype.oss</groupId>
-     <artifactId>oss-parent</artifactId>
-     <version>7</version>
-   </parent>
+    <!-- This section is here so we can publish to central -->
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.gradientx</groupId>
@@ -28,17 +28,6 @@
         </license>
     </licenses>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lwes.journaller.home>/usr/share/lwes-journaller</lwes.journaller.home>
-    </properties>
-
-    <scm>
-        <connection>scm:git:git@github.com:lwes/lwes-journaller-java.git</connection>
-        <developerConnection>scm:git:git@github.com:lwes/lwes-journaller-java.git</developerConnection>
-        <url>https://github.com/lwes/lwes-journaller-java</url>
-    </scm>
-
     <developers>
         <developer>
             <id>lwes-team</id>
@@ -46,6 +35,82 @@
             <email>lwes-devel@sourceforge.net</email>
         </developer>
     </developers>
+
+    <scm>
+        <url>https://github.com/gradientx/gx-lwes-journaller</url>
+        <connection>scm:git:git://github.com/gradientx/gx-lwes-journaller.git</connection>
+        <developerConnection>scm:git:git@github.com:gradientx/gx-lwes-journaller.git</developerConnection>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lwes.journaller.home>/usr/share/lwes-journaller</lwes.journaller.home>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>gradientx-release-repo</id>
+            <name>Gradient X Release Repository</name>
+            <url>http://artifactory.gradientx.com:8081/artifactory/libs-release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>gradientx-snapshot-repo</id>
+            <name>Gradient X Snapshot Repository</name>
+            <url>http://artifactory.gradientx.com:8081/artifactory/libs-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>cloudera</id>
+            <url>http://artifactory.gradientx.com:8081/artifactory/cloudera</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>gradientx-plugins-release-repo</id>
+            <name>Gradient X Plugins Release Repository</name>
+            <url>http://artifactory.gradientx.com:8081/artifactory/plugins-release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>gradientx-plugins-snapshot-repo</id>
+            <name>Gradient X Plugins Snapshot Repository</name>
+            <url>http://artifactory.gradientx.com:8081/artifactory/plugins-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    <distributionManagement>
+        <repository>
+            <id>gradientx-release-repo</id>
+            <name>Gradient X Release Repository</name>
+            <url>http://artifactory.gradientx.com:8081/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>gradientx-snapshot-repo</id>
+            <name>Gradient X Snapshot Repository</name>
+            <url>http://artifactory.gradientx.com:8081/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -67,7 +132,7 @@
         <dependency>
             <groupId>com.gradientx</groupId>
             <artifactId>lwes-java</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>1.2.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -309,62 +374,5 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>Maven central repository</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        <repository>
-            <id>cloudera</id>
-            <name>cloudera</name>
-            <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
-        </repository>
-        <repository>
-            <id>gradientx-release-repo</id>
-            <name>Gradient X Release Repository</name>
-            <url>s3://codex.corp.gradientx.com/maven/release</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>gradientx-snapshot-repo</id>
-            <name>Gradient X Snapshot Repository</name>
-            <url>s3://codex.corp.gradientx.com/maven/snapshot</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>gradientx-release-repo</id>
-            <name>Gradient X Release Repository</name>
-            <url>s3://codex.corp.gradientx.com/maven/release</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>gradientx-snapshot-repo</id>
-            <name>Gradient X Snapshot Repository</name>
-            <url>s3://codex.corp.gradientx.com/maven/snapshot</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+
 </project>
