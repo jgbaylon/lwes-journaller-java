@@ -1,4 +1,4 @@
-package org.lwes.journaller;
+package org.lwes.journaller.itest;
 /**
  * @author fmaritato
  */

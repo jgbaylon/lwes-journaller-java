@@ -1,4 +1,4 @@
-package org.lwes.journaller;
+package org.lwes.journaller.itest;
 
 /**
  * @author abohr
@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.lwes.EventSystemException;
+import org.lwes.journaller.Journaller;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,6 +21,7 @@ import java.net.ServerSocket;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+// We should not be running builds on the machines we're deploying to!!! This needs to move to acceptance tests
 public class UnicastJournallerTest extends BaseJournallerTest {
     private transient Log log = LogFactory.getLog(UnicastJournallerTest.class);
 	static {

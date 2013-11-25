@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.lwes.EventSystemException;
 import org.lwes.journaller.handler.NIOEventHandler;
+import org.lwes.journaller.itest.BaseJournallerTest;
 
 import java.net.UnknownHostException;
 
