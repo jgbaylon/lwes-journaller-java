@@ -62,7 +62,7 @@
         <repository>
             <id>gradientx-snapshot-repo</id>
             <name>Gradient X Snapshot Repository</name>
-            <url>http://artifactory.gradientx.com:8081/artifactory/libs-snapshot</url>
+            <url>http://stage-artifactory001.ae1i.gradientx.com:8081/artifactory/libs-snapshot</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -90,7 +90,7 @@
         <pluginRepository>
             <id>gradientx-plugins-snapshot-repo</id>
             <name>Gradient X Plugins Snapshot Repository</name>
-            <url>http://artifactory.gradientx.com:8081/artifactory/plugins-snapshot</url>
+            <url>http://stage-artifactory001.ae1i.gradientx.com:8081/artifactory/plugins-snapshot</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -108,7 +108,7 @@
         <snapshotRepository>
             <id>gradientx-snapshot-repo</id>
             <name>Gradient X Snapshot Repository</name>
-            <url>http://artifactory.gradientx.com:8081/artifactory/libs-snapshot-local</url>
+            <url>http://stage-artifactory001.ae1i.gradientx.com:8081/artifactory/libs-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
 
